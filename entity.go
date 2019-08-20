@@ -8,6 +8,8 @@ var idSrc = uint64(1)
 // A struct embedding ID will implement it.
 type Entity interface {
 	GetID() *ID
+	Equal(e Entity) bool
+	IsZero() bool
 }
 
 // ID is the base component all entities have.
@@ -30,8 +32,8 @@ func (id *ID) GetID() *ID {
 }
 
 // Equal returns true if the IDs are equal
-func (id *ID) Equal(id2 *ID) bool {
-	return id.ID == id2.ID
+func (id *ID) Equal(e Entity) bool {
+	return id.ID == e.GetID().ID
 }
 
 // IsZero returns true if the ID is uninitalised

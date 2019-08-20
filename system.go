@@ -11,7 +11,7 @@ type System interface {
 // Default Priority is 0, executed from smallest to largest.
 type Prioritizer interface {
 	System
-	Priority() int
+	GetPriority() int
 }
 
 // Initaliser is a System that has an Init function.

@@ -33,6 +33,8 @@ func (d *Depends) GetDepends() *Depends {
 
 // DependsSystem is a system for managing dependancies.
 type DependsSystem struct {
+	Priority int
+
 	entities  []Entity
 	dependers map[ID][]Depender
 	shuffeler *rand.Rand
@@ -95,8 +97,25 @@ func (d *DependsSystem) Add(e Entity) error {
 // Remove implements System
 func (d *DependsSystem) Remove(e Entity) {
 	for i := range d.entities {
-		if d.entities[i].GetID().Equal(e.GetID()) {
+		if d.entities[i].Equal(e) {
 			d.entities = append(d.entities[:i], d.entities[i+1:]...)
+		}
+	}
+
+	if depender, ok := e.(Depender); ok {
+		depends := depender.GetDepends()
+		for i := range depends.Entities {
+			dependers := d.dependers[*depends.Entities[i].GetID()]
+			for j := range dependers {
+				if dependers[j].Equal(depender) {
+					if len(dependers) == 1 {
+						delete(d.dependers, *depends.Entities[i].GetID())
+						break
+					}
+					dependers = append(dependers[:j], dependers[j+1:]...)
+				}
+			}
+			d.dependers[*depends.Entities[i].GetID()] = dependers
 		}
 	}
 
@@ -106,4 +125,9 @@ func (d *DependsSystem) Remove(e Entity) {
 		}
 		delete(d.dependers, *e.GetID())
 	}
+}
+
+// GetPriority implements Prioritiser
+func (d *DependsSystem) GetPriority() int {
+	return d.Priority
 }

@@ -27,7 +27,7 @@ func (s State) Update(u interface{}) {
 // If an error occurs, it removes the entity from already-added systems,
 // and returns the error. If the Entity'd ID is 0, it will be generated.
 func (s State) Add(e Entity) error {
-	if e.GetID().ID == 0 {
+	if e.IsZero() {
 		id := e.GetID()
 		nid := NewID()
 		*id = *nid
@@ -35,7 +35,7 @@ func (s State) Add(e Entity) error {
 	for i := range s {
 		err := s[i].Add(e)
 		if err != nil {
-			for ; i >= 0; i-- {
+			for i--; i >= 0; i-- {
 				s[i].Remove(e)
 			}
 			return err
@@ -58,10 +58,10 @@ func (s State) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
 func (s State) Less(i, j int) bool {
 	var ip, jp int
 	if p, ok := s[i].(Prioritizer); ok {
-		ip = p.Priority()
+		ip = p.GetPriority()
 	}
 	if p, ok := s[j].(Prioritizer); ok {
-		jp = p.Priority()
+		jp = p.GetPriority()
 	}
 	return ip < jp
 }

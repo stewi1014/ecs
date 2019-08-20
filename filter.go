@@ -47,7 +47,7 @@ type IDFilter struct {
 
 // Satisfies implements Filter.
 func (d *IDFilter) Satisfies(e Entity) bool {
-	return d.id.Equal(e.GetID())
+	return d.id.Equal(e)
 }
 
 // NewTypeFilter returns a filter for a specific type.
