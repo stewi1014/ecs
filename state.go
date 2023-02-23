@@ -1,8 +1,6 @@
 package ecs
 
-import (
-	"sort"
-)
+import "sort"
 
 // State is an Entity-Component-System.
 // It is simply a slice of systems.
@@ -15,7 +13,7 @@ func (s *State) AddSystem(system System) {
 }
 
 // Update calls Update in all systems.
-// u can be ignored, or used for run-levels, a time-delta, or whatever you like.
+// u can be ignored, or used for run-levels, a time-delta, or anything.
 // it is passed to all systems
 func (s State) Update(u interface{}) {
 	for i := range s {
@@ -27,11 +25,6 @@ func (s State) Update(u interface{}) {
 // If an error occurs, it removes the entity from already-added systems,
 // and returns the error. If the Entity'd ID is 0, it will be generated.
 func (s State) Add(e Entity) error {
-	if e.IsZero() {
-		id := e.GetID()
-		nid := NewID()
-		*id = *nid
-	}
 	for i := range s {
 		err := s[i].Add(e)
 		if err != nil {
@@ -52,7 +45,6 @@ func (s State) Remove(e Entity) {
 }
 
 // These functions implement sort.Interface
-
 func (s State) Len() int      { return len(s) }
 func (s State) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
 func (s State) Less(i, j int) bool {
